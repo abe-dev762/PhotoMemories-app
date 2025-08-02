@@ -12,7 +12,18 @@ import { Label } from '@radix-ui/react-label';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
-import { type UserSignUp } from '@/types';
+
+
+interface UserLogin {
+    email: string;
+    password: string;
+};
+
+interface UserSignUp {
+    email: string;
+    password: string;
+    confirmedPassword: string;
+};
 
 
 const initialValue: UserSignUp = {
@@ -27,8 +38,28 @@ interface ISignupProps {}
 const Signup: React.FunctionComponent<ISignupProps> = () => {
   const [userInfo, setUserInfo] = React.useState<UserSignUp>(initialValue);
   
+  const handleSubmit = async(e: React.MouseEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      console.log("User info is ", userInfo);
+    } catch (error) {
+      console.log("Error: ", error);
+    }
+  };
+
+  const handleGoogleSignIn = async(e: React.MouseEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      console.log("User password is ", userInfo);
+    } catch (error) {
+      console.log("Error: ", error);
+    }
+  };
+
+
   return (
     <Card>
+      <form onSubmit={handleSubmit}>
       <CardHeader>
         <CardTitle className="text-2xl">Create an account</CardTitle>
         <CardDescription>
@@ -37,8 +68,10 @@ const Signup: React.FunctionComponent<ISignupProps> = () => {
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         <div className="flex justify-center items-center">
-          
-          <Button variant="outline" className='w-1/2'>
+          <Button 
+          variant="outline" 
+          className='w-1/2'
+          >
             <svg role="img" viewBox="0 0 24 24">
               <path
                 fill="currentColor"
@@ -63,12 +96,23 @@ const Signup: React.FunctionComponent<ISignupProps> = () => {
           <Input
             id="email-create-account"
             type="email"
-            placeholder="m@example.com"
+            placeholder="john@example.com"
+            value={userInfo.email}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => 
+              setUserInfo({...userInfo, email: e.target.value})
+            }
           />
         </div>
         <div className="flex flex-col gap-3">
           <Label htmlFor="password-create-account">Password</Label>
-          <Input id="password-create-account" type="password" />
+          <Input 
+          id="password-create-account" 
+          type="password"
+          value={userInfo.password}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => 
+            setUserInfo({ ...userInfo, password: e.target.value })
+          }
+          />
         </div>
       </CardContent>
       <CardFooter>
@@ -77,6 +121,7 @@ const Signup: React.FunctionComponent<ISignupProps> = () => {
       <p className='mt-3 text-sm text-center'>
           Already have an account ? <Link to="/login" className='hover:text-blue-600 text-decoration-line: underline'>Log in here</Link>
         </p>
+     </form>    
     </Card>
   )
 }
