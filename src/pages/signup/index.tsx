@@ -12,7 +12,7 @@ import { Label } from '@radix-ui/react-label';
 import { Button } from '@/components/ui/button';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import { useUserAuth } from '@/context/userAuthContext';
+import { useUserAuth } from '@/context/UserAuthContext';
 
 
 interface UserSignUp {
@@ -57,6 +57,9 @@ const Signup: React.FunctionComponent<ISignupProps> = () => {
 
 
   return (
+   <div className='bg-slate-800 w-full h-screen'>
+    <div className='container mx-auto p-6 h-full pl-2'>
+      <div className='max-w-sm rounded-xl border bg-card text-card-foreground mx-auto'>
     <Card>
       <form onSubmit={handleSubmit}>
       <CardHeader>
@@ -127,13 +130,16 @@ const Signup: React.FunctionComponent<ISignupProps> = () => {
         </div>
       </CardContent>
       <CardFooter>
-        <Button className="w-full">Create account</Button>
+        <Button className="w-full mt-1">Create account</Button>
       </CardFooter>
       <p className='mt-3 text-sm text-center'>
           Already have an account ? <Link to="/login" className='hover:text-blue-600 text-decoration-line: underline'>Log in here</Link>
         </p>
      </form>    
     </Card>
+     </div>
+    </div>
+   </div>
   )
 }
 

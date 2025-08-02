@@ -1,4 +1,5 @@
 import React from 'react'
+import Layout from '@/components/ui/layout'
 
 interface HomeProps {
 
@@ -6,7 +7,9 @@ interface HomeProps {
 
 const Home: React.FunctionComponent<HomeProps> = (props) => {
   return (
-    <div>Home</div>
+    <Layout>
+      <div>Home</div>
+    </Layout>
   )
 }
 

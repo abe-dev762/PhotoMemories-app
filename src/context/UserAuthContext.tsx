@@ -41,7 +41,7 @@ export const userAuthContext = createContext<AuthContextData>({
     googleSignIn,
 });
 
-export const userAuthProvider: React.FunctionComponent<IUserAuthProvider> = ({ children }) => {
+export const UserAuthProvider: React.FunctionComponent<IUserAuthProvider> = ({ children }) => {
     
     const [user, setUser] = useState<User | null>(null);
     useEffect(() => {
