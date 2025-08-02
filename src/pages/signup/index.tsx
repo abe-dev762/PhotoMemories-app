@@ -10,14 +10,10 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@radix-ui/react-label';
 import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import { useUserAuth } from '@/context/userAuthContext';
 
-
-interface UserLogin {
-    email: string;
-    password: string;
-};
 
 interface UserSignUp {
     email: string;
@@ -37,20 +33,23 @@ interface ISignupProps {}
 
 const Signup: React.FunctionComponent<ISignupProps> = () => {
   const [userInfo, setUserInfo] = React.useState<UserSignUp>(initialValue);
-  
+  const { googleSignIn, signUp } = useUserAuth();
+  const navigate = useNavigate();
   const handleSubmit = async(e: React.MouseEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      console.log("User info is ", userInfo);
+      await signUp(userInfo.email, userInfo.password);
+      navigate("/");
     } catch (error) {
       console.log("Error: ", error);
     }
   };
 
-  const handleGoogleSignIn = async(e: React.MouseEvent<HTMLFormElement>) => {
+  const handleGoogleSignIn = async(e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
     try {
-      console.log("User password is ", userInfo);
+      await googleSignIn();
+      navigate("/");
     } catch (error) {
       console.log("Error: ", error);
     }
@@ -71,6 +70,7 @@ const Signup: React.FunctionComponent<ISignupProps> = () => {
           <Button 
           variant="outline" 
           className='w-1/2'
+          onClick={handleGoogleSignIn}
           >
             <svg role="img" viewBox="0 0 24 24">
               <path
@@ -111,6 +111,17 @@ const Signup: React.FunctionComponent<ISignupProps> = () => {
           value={userInfo.password}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => 
             setUserInfo({ ...userInfo, password: e.target.value })
+          }
+          />
+        </div>
+        <div className="flex flex-col gap-3">
+          <Label htmlFor="confirm-password-account">Confirm password</Label>
+          <Input 
+          id="confirm-password-account" 
+          type="password"
+          value={userInfo.confirmedPassword}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => 
+            setUserInfo({ ...userInfo, confirmedPassword: e.target.value })
           }
           />
         </div>
