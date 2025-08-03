@@ -1,4 +1,5 @@
-import * as React from 'react'
+import * as React from 'react';
+import Layout from '@/components/ui/layout';
 
 interface MyPhotoProps {
 
@@ -6,7 +7,9 @@ interface MyPhotoProps {
 
 const MyPhotoProps: React.FunctionComponent<MyPhotoProps> = (props) => {
   return (
-    <div>myPhoto</div>
+    <Layout>
+      <div>My Photos</div>
+    </Layout>
   )
 }
 

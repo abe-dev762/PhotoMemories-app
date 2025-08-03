@@ -1,4 +1,5 @@
 import * as React from 'react';
+import Layout from '@/components/ui/layout';
 
 interface profileProps {
 
@@ -6,7 +7,9 @@ interface profileProps {
 
 const profile: React.FunctionComponent<profileProps> = (props) => {
   return (
-    <div>profile</div>
+    <Layout>
+      <div>Profile</div>
+    </Layout>
   )
 }
 
