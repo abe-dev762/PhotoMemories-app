@@ -13,22 +13,19 @@ import { Button } from '@/components/ui/button';
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { useUserAuth } from '@/context/UserAuthContext';
+import type { UserLogin } from '@/types';
 
 interface  ILoginProps {
 
 };
 
-interface UserLogin {
-  email: string;
-  password: string;
-};
 
 const initialValue: UserLogin = {
   email: "",
   password: "",
 };
 
-const Login: React.FunctionComponent<ILoginProps> = (props) => {
+const Login: React.FunctionComponent<ILoginProps> = () => {
   const [userLoginInfo, setUserLoginInfo] = React.useState<UserLogin>(initialValue);
     const { googleSignIn, logIn } = useUserAuth();
     const navigate = useNavigate();

@@ -13,13 +13,9 @@ import { Button } from '@/components/ui/button';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { useUserAuth } from '@/context/UserAuthContext';
+import type { UserSignUp } from '@/types';
 
 
-interface UserSignUp {
-    email: string;
-    password: string;
-    confirmedPassword: string;
-};
 
 
 const initialValue: UserSignUp = {
