@@ -1,4 +1,5 @@
 import React from 'react';
+import { useState } from 'react';
 import Layout from '@/components/ui/layout';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -28,8 +29,14 @@ const createPost: React.FunctionComponent<createPostProps> = () => {
   
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    const updatedPost = {
+      ...post,
+      userId: user?.id || null,
+      photos: [...fileEntry.files]
+    };
     console.log("Upload file entry: ", fileEntry);
-    console.log("The create post is: ", post);
+    console.log("The create post is: ", updatedPost);
   }
   
 
@@ -58,7 +65,7 @@ const createPost: React.FunctionComponent<createPostProps> = () => {
                 <div className='flex flex-col mx-auto'>
                   <Label className='mb-4 pr-2' htmlFor='photo'>Photos</Label>
                 </div>
-                  <div className='mx-auto'>
+                  <div className='flex flex-col justify-center items-center'>
                   <FileUploader 
                   fileEntry={fileEntry} onChange={setFileEntry}/>
                   <Button className='mt-8 w-32' type='submit'>Post</Button>
