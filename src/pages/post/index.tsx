@@ -1,23 +1,18 @@
 import React from 'react';
-import { useState } from 'react';
 import Layout from '@/components/ui/layout';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import FileUploader from '@/components/fileUploader';
 import { useUserAuth } from '@/context/UserAuthContext';
-import type { FileEntry, Post } from '@/types';
+import type { FileEntry, PhotoMeta, Post } from '@/types';
 
-interface createPostProps {}
+interface CreatePostProps {}
 
-
-
-
-const createPost: React.FunctionComponent<createPostProps> = () => {
+const CreatePost: React.FunctionComponent<CreatePostProps> = () => {
   const { user } = useUserAuth();
-  const [fileEntry, setFileEntry] = React.useState<FileEntry>({
-    files: [],
-  });
+
+  const [fileEntry, setFileEntry] = React.useState<FileEntry>({ files: [] });
   const [post, setPost] = React.useState<Post>({
     caption: "",
     photos: [],
@@ -26,19 +21,44 @@ const createPost: React.FunctionComponent<createPostProps> = () => {
     userId: null,
     date: new Date(),
   });
-  
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const updatedPost = {
+    if (fileEntry.files.length === 0) {
+      console.warn("No files selected, please select at least one photo");
+      return;
+    }
+    
+    const photoMeta: PhotoMeta[] = fileEntry.files.map((file) => ({
+      cdnUrl: file.cdnUrl ?? "",
+      uuid: file.uuid ?? "",
+    }));
+
+    if (!user) {
+      console.warn("No user found. Please log in to post.");
+      return;
+    }
+    
+    const newPost: Post = {
       ...post,
-      userId: user?.id || null,
-      photos: [...fileEntry.files]
+      userId: user.uid,
+      photos: photoMeta,
+      date: new Date(),
     };
-    console.log("Upload file entry: ", fileEntry);
-    console.log("The create post is: ", updatedPost);
-  }
-  
+
+    console.log("The final post is: ", newPost);
+
+    setPost({
+      caption: "",
+      photos: [],
+      likes: 0,
+      userLikes: [],
+      userId: null,
+      date: new Date(),
+    });
+    setFileEntry({ files: [] });
+  };
 
   return (
     <Layout>
@@ -53,30 +73,37 @@ const createPost: React.FunctionComponent<createPostProps> = () => {
                 <Label className='mb-4' htmlFor='caption'>
                   Photo Caption
                 </Label>
-                <Textarea 
-                className='mb-8'
-                id='caption'
-                placeholder='What`s your photos story ?'
-                value={post.caption}
-                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => 
-                  setPost({ ...post, caption: e.target.value})
-                }
+                <Textarea
+                  className='mb-8'
+                  id='caption'
+                  placeholder='What`s your photos story ?'
+                  value={post.caption}
+                  onChange={(e) =>
+                    setPost({ ...post, caption: e.target.value })
+                  }
                 />
                 <div className='flex flex-col mx-auto'>
-                  <Label className='mb-4 pr-2' htmlFor='photo'>Photos</Label>
+                  <Label className='mb-4 pr-2' htmlFor='photo'>
+                    Photos
+                  </Label>
                 </div>
-                  <div className='flex flex-col justify-center items-center'>
-                  <FileUploader 
-                  fileEntry={fileEntry} onChange={setFileEntry}/>
-                  <Button className='mt-8 w-32' type='submit'>Post</Button>
-                  </div>
+                <div className='flex flex-col justify-center items-center'>
+                  <FileUploader fileEntry={fileEntry} onChange={setFileEntry} />
+                  <Button
+                    className='mt-8 w-32'
+                    type='submit'
+                    disabled={fileEntry.files.length === 0} // ✅ Disable if no files
+                  >
+                    Post
+                  </Button>
+                </div>
               </div>
             </form>
           </div>
         </div>
       </div>
     </Layout>
-  )
-}
+  );
+};
 
-export default createPost;
+export default CreatePost;

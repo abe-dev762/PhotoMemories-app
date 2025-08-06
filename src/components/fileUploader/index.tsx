@@ -1,77 +1,67 @@
-import React from 'react'
-import { useEffect, useRef } from 'react';
-import { FileUploaderRegular, UploadCtxProvider } from '@uploadcare/react-uploader';
-import '@uploadcare/react-uploader/core.css';
-import type { OutputFileEntry } from '@uploadcare/react-uploader';
-import type { FileEntry } from '@/types';
+import React, { useEffect, useState } from "react";
+import type { FileEntry } from "@/types";
+import {
+  FileUploaderRegular,
+  type OutputFileEntry,
+  type OutputCollectionState,
+} from "@uploadcare/react-uploader";
 
-
-
-interface IFileUploader {
-    fileEntry: FileEntry;
-    onChange: (fileEntry: FileEntry) => void;
+interface FileUploaderProps {
+  fileEntry: FileEntry;
+  onChange: (entry: FileEntry) => void;
 }
 
-const FileUploader: React.FunctionComponent<IFileUploader> = ({ fileEntry, onChange }) => {
-    const [uploadedFile, setUploadedFile] = React.useState<OutputFileEntry[]>([]);
-    const inputRef = useRef<HTMLInputElement>(null);
+const FileUploader: React.FC<FileUploaderProps> = ({ fileEntry, onChange }) => {
+  const [previews, setPreviews] = useState<string[]>([]);
 
-    useEffect(() => {
-      const handleUploadEvent = (e: Event) => {
-      const customEvent = e as CustomEvent<OutputFileEntry[]>;
-        if (customEvent.detail) {
-          console.log("The upload file event is: ", e);
-          setUploadedFile([...customEvent.detail]);
-        }
-      };
-       const el = inputRef.current;
-       if (el) {
-       el.addEventListener("data-output", handleUploadEvent);
-       return () => el.removeEventListener("data-output", handleUploadEvent);
-        }
-      }, [setUploadedFile]);
+  // Update previews whenever fileEntry changes
+  useEffect(() => {
+    const urls = fileEntry.files
+      .map((f) => f.cdnUrl || f.externalUrl || "")
+      .filter(Boolean);
+    setPreviews(urls);
+  }, [fileEntry.files]);
 
-      useEffect(() => {
-        const resetUploaderState = () => {
-          const customInput = inputRef.current as HTMLInputElement & {
-            uploadCollection?: {
-              clearAll: () => void;
-            }
-          };
-          customInput.uploadCollection?.clearAll();
-        };
+  // Correct callback signature
+  const handleFileChange = (
+    state: OutputCollectionState<unknown, unknown>
+  ) => {
+    const uploadedFiles: OutputFileEntry[] = state.successEntries || [];
 
-        const handleDoneFlow = () => {
-          resetUploaderState();
-            
-          onChange({ files: [...uploadedFile]});
-          setUploadedFile([]);
-        }
+    const mappedFiles = uploadedFiles.map((file) => ({
+      ...file,
+      cdnUrl: file.cdnUrl || file.externalUrl || "",
+      uuid: file.uuid || crypto.randomUUID(),
+    }));
 
-        
-        const el = inputRef.current;
-        if (el) {
-          el.addEventListener("done-flow", handleDoneFlow);
-          return () => el.removeEventListener("done-flow", handleDoneFlow);
-        }
-      }, [fileEntry, onChange, uploadedFile]);
+    onChange({ files: mappedFiles });
+  };
 
+  return (
+    <div className="flex flex-col items-center gap-4">
+      <FileUploaderRegular
+        sourceList="local, camera, facebook, gdrive"
+        classNameUploader="uc-dark"
+        pubkey="dab42af79c63891d51e5"
+        multiple
+        confirmUpload={false}
+        removeCopyright
+        onChange={handleFileChange} // ✅ Fixed type
+      />
 
-    return (
-    <div className='max-w-md mx-auto mt-10 p-6 border rounded-lg shadow-sm bg-white'>
-        <FileUploaderRegular
-         sourceList="local, camera, facebook, gdrive"
-         classNameUploader="uc-dark"
-         pubkey="dab42af79c63891d51e5"
-         multiple
-         confirmUpload={false}
-         removeCopyright={true}
-         />
-         <input 
-         ref={inputRef}
-         type='hidden'
-         role='uploadcare-uploader'
-         data-multiple/>
+      {/* Preview thumbnails */}
+      {previews.length > 0 && (
+        <div className="flex flex-wrap gap-2 mt-4">
+          {previews.map((url, idx) => (
+            <img
+              key={idx}
+              src={url}
+              alt={`preview-${idx}`}
+              className="w-20 h-20 object-cover rounded-md border"
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import type { OutputFileEntry } from "@uploadcare/react-uploader";
+import type {  OutputFileEntry } from "@uploadcare/react-uploader";
 
 
 export interface UserLogin {
