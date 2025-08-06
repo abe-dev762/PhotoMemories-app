@@ -4,7 +4,9 @@ import {
   FileUploaderRegular,
   type OutputFileEntry,
   type OutputCollectionState,
+  type OutputCollectionStatus,
 } from "@uploadcare/react-uploader";
+import '@uploadcare/react-uploader/core.css'
 
 interface FileUploaderProps {
   fileEntry: FileEntry;
@@ -14,7 +16,11 @@ interface FileUploaderProps {
 const FileUploader: React.FC<FileUploaderProps> = ({ fileEntry, onChange }) => {
   const [previews, setPreviews] = useState<string[]>([]);
 
-  // Update previews whenever fileEntry changes
+  function isSuccessEntry(file: OutputFileEntry): file is Extract<OutputFileEntry, { status: "success" }> {
+  return file.status === "success";
+};
+
+
   useEffect(() => {
     const urls = fileEntry.files
       .map((f) => f.cdnUrl || f.externalUrl || "")
@@ -22,20 +28,19 @@ const FileUploader: React.FC<FileUploaderProps> = ({ fileEntry, onChange }) => {
     setPreviews(urls);
   }, [fileEntry.files]);
 
-  // Correct callback signature
   const handleFileChange = (
-    state: OutputCollectionState<unknown, unknown>
-  ) => {
-    const uploadedFiles: OutputFileEntry[] = state.successEntries || [];
+  state: OutputCollectionState<OutputCollectionStatus, "maybe-has-group">) => {
+  const uploadedFiles = state.successEntries.filter(isSuccessEntry);
 
-    const mappedFiles = uploadedFiles.map((file) => ({
+    onChange({
+    files: uploadedFiles.map((file) => ({
       ...file,
       cdnUrl: file.cdnUrl || file.externalUrl || "",
       uuid: file.uuid || crypto.randomUUID(),
-    }));
-
-    onChange({ files: mappedFiles });
+      })),
+    });
   };
+
 
   return (
     <div className="flex flex-col items-center gap-4">
@@ -46,10 +51,10 @@ const FileUploader: React.FC<FileUploaderProps> = ({ fileEntry, onChange }) => {
         multiple
         confirmUpload={false}
         removeCopyright
-        onChange={handleFileChange} // ✅ Fixed type
+        onChange={handleFileChange}
       />
 
-      {/* Preview thumbnails */}
+      
       {previews.length > 0 && (
         <div className="flex flex-wrap gap-2 mt-4">
           {previews.map((url, idx) => (
@@ -57,7 +62,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({ fileEntry, onChange }) => {
               key={idx}
               src={url}
               alt={`preview-${idx}`}
-              className="w-20 h-20 object-cover rounded-md border"
+              className="w-30 h-30 object-cover rounded-md border"
             />
           ))}
         </div>

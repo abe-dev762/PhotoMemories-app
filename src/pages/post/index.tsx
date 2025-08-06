@@ -6,12 +6,14 @@ import { Button } from '@/components/ui/button';
 import FileUploader from '@/components/fileUploader';
 import { useUserAuth } from '@/context/UserAuthContext';
 import type { FileEntry, PhotoMeta, Post } from '@/types';
+import { createPost } from '@/firebaseDb/post.service';
+import { useNavigate } from 'react-router-dom';
 
 interface CreatePostProps {}
 
 const CreatePost: React.FunctionComponent<CreatePostProps> = () => {
   const { user } = useUserAuth();
-
+  const navigate = useNavigate();
   const [fileEntry, setFileEntry] = React.useState<FileEntry>({ files: [] });
   const [post, setPost] = React.useState<Post>({
     caption: "",
@@ -39,15 +41,21 @@ const CreatePost: React.FunctionComponent<CreatePostProps> = () => {
       console.warn("No user found. Please log in to post.");
       return;
     }
-    
+    if (user != null) {
     const newPost: Post = {
       ...post,
       userId: user.uid,
       photos: photoMeta,
       date: new Date(),
-    };
+      };
 
     console.log("The final post is: ", newPost);
+    await createPost(newPost);
+    navigate("/");
+
+    } else {
+      navigate("/login");
+    }
 
     setPost({
       caption: "",
@@ -58,6 +66,7 @@ const CreatePost: React.FunctionComponent<CreatePostProps> = () => {
       date: new Date(),
     });
     setFileEntry({ files: [] });
+
   };
 
   return (
