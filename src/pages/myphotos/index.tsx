@@ -3,23 +3,23 @@ import Layout from '@/components/ui/layout';
 import { useUserAuth } from '@/context/UserAuthContext';
 import type { DocumentResponse, Post } from '@/types';
 import { getPostByUserId } from '@/firebaseDb/post.service';
-import { doc, QuerySnapshot } from 'firebase/firestore';
+import { QueryDocumentSnapshot, QuerySnapshot } from 'firebase/firestore';
 
-
-interface MyPhotoProps {
-
-}
+interface MyPhotoProps {}
 
 const MyPhotos: React.FC<MyPhotoProps> = () => {
   const { user } = useUserAuth();
+  const [posts, setPosts] = React.useState([]);
   const [data, setData] = React.useState<DocumentResponse[]>([]);
+  const [loading, setLoading] = React.useState(true);    
 
-  const getAllPost = async (id: string) => {
+///
+const getAllPost = async (id: string) => {
     try {
       const querySnapshot = await getPostByUserId(id);
       const tempArray: DocumentResponse[] = [];
       if (querySnapshot.size > 0) {
-        querySnapshot.forEach((doc: QuerySnapshot<Post>) => {
+        querySnapshot.forEach((doc) => {
           const data = doc.data() as Post;
           const responseObj: DocumentResponse = {
             id: doc.id,
@@ -37,25 +37,38 @@ const MyPhotos: React.FC<MyPhotoProps> = () => {
     }
   }
 
-  React.useEffect(() => {
-    if (user != null) {
-      getAllPost(user.uid);
-    }
-  }, []);
 
-  const renderPost = () => {
-    return data.map((item) => {
-      return (
-        <div key={item.photos[0].uuid}
-        className='relative'>
-          <div className='absolute'>
-            <img src={`${item.photos[0].cdnUrl}/-/progressive/yes/-/scale_crop/300x300/center/`}/>
-          </div>
-        </div>
-      )
-    })
+  React.useEffect(() => {
+  if (!user?.uid) return; 
+
+  const fetchPosts = async () => {
+    setLoading(true); 
+    try {
+      const snapshot = await getPostByUserId(user.uid);
+
+      const fetchedPosts = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      setPosts(fetchedPosts); 
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+    } finally {
+      setLoading(false); 
+    }
+  };
+
+  fetchPosts();
+}, [user?.uid]); 
+
+
+  if (loading) {
+    return (
+      <div>...Loading</div>
+    )
   }
-  
+
   return (
     <Layout>
       <div className='flex justify-center'>
@@ -65,13 +78,13 @@ const MyPhotos: React.FC<MyPhotoProps> = () => {
           </h3>
           <div className='p-8'>
             <div className='grid grid-cols-2 md:grid-cols-3 gap-4'>
-              {data ? renderPost() : <div>...Loading</div>}
+              {posts}
             </div>
           </div>
         </div>
       </div>
     </Layout>
-  )
-}
+  );
+};
 
 export default MyPhotos;

@@ -101,7 +101,7 @@ const CreatePost: React.FunctionComponent<CreatePostProps> = () => {
                   <Button
                     className='mt-8 w-32'
                     type='submit'
-                    disabled={fileEntry.files.length === 0} // ✅ Disable if no files
+                    disabled={fileEntry.files.length === 0}
                   >
                     Post
                   </Button>
