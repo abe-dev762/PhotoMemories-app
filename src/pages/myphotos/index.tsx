@@ -3,13 +3,18 @@ import Layout from '@/components/ui/layout';
 import { useUserAuth } from '@/context/UserAuthContext';
 import type { DocumentResponse, Post } from '@/types';
 import { getPostByUserId } from '@/firebaseDb/post.service';
-import { QueryDocumentSnapshot, QuerySnapshot } from 'firebase/firestore';
+import { HeartIcon } from 'lucide-react';
+
+
+
 
 interface MyPhotoProps {}
 
+
+
 const MyPhotos: React.FC<MyPhotoProps> = () => {
   const { user } = useUserAuth();
-  const [posts, setPosts] = React.useState([]);
+  const [posts, setPosts] = React.useState<DocumentResponse[]>([]);
   const [data, setData] = React.useState<DocumentResponse[]>([]);
   const [loading, setLoading] = React.useState(true);    
 
@@ -46,10 +51,13 @@ const getAllPost = async (id: string) => {
     try {
       const snapshot = await getPostByUserId(user.uid);
 
-      const fetchedPosts = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+      const fetchedPosts: DocumentResponse[] = snapshot.docs.map((doc) => {
+        const data = doc.data() as Post;
+        return {
+          id: doc.id,
+          ...data,
+        };
+      });
 
       setPosts(fetchedPosts); 
     } catch (error) {
@@ -78,7 +86,25 @@ const getAllPost = async (id: string) => {
           </h3>
           <div className='p-8'>
             <div className='grid grid-cols-2 md:grid-cols-3 gap-4'>
-              {posts}
+              {posts.length === 0 ? (
+                <p>No posts found</p>
+              ) : (
+                posts.map((post) =>
+                post.photos?.map((photo, index) => (
+                  <div key={`${post.id}-${index}`} className='border rounded-md relative'>
+                    <div className='absolute group transition-all duration-200 bg-transparent hover:bg-slate-900 hover:opacity-70 top-0 bottom-0 left-0 right-0 h-full w-full'>
+                      <div className='flex flex-col justify-center items-center w-full h-full'>
+                        <HeartIcon className='hidden group-hover:block fill-white'/>
+                        <div className='hidden group-hover:block text-white'>{post.likes} Likes</div>
+                      </div>
+                    </div>
+                    <img
+                    className='w-full'
+                    alt='post'
+                    src={`${photo.cdnUrl}/-/progressive/yes/-/scale_crop/400x400/center/`}/>
+                  </div>
+                )))
+              )}
             </div>
           </div>
         </div>

@@ -29,7 +29,8 @@ const Login: React.FunctionComponent<ILoginProps> = () => {
   const [userLoginInfo, setUserLoginInfo] = React.useState<UserLogin>(initialValue);
     const { googleSignIn, logIn } = useUserAuth();
     const navigate = useNavigate();
-    const handleSubmit = async(e: React.MouseEvent<HTMLFormElement>) => {
+    
+    const handleSubmit = async(e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       try {
         await logIn(userLoginInfo.email, userLoginInfo.password);
@@ -39,7 +40,7 @@ const Login: React.FunctionComponent<ILoginProps> = () => {
       }
     };
   
-    const handleGoogleSignIn = async(e: React.MouseEvent<HTMLElement>) => {
+    const handleGoogleSignIn = async(e: React.MouseEvent<HTMLButtonElement>) => {
       e.preventDefault();
       try {
         await googleSignIn();
@@ -65,7 +66,7 @@ const Login: React.FunctionComponent<ILoginProps> = () => {
             <div className="flex justify-center items-center">
               <Button 
               variant="outline" 
-              className='w-1/2'
+              className='w-1/2 flex items-center justify-center gap-2 mt-2'
               onClick={handleGoogleSignIn}
               >
                 <svg role="img" viewBox="0 0 24 24">
@@ -112,7 +113,7 @@ const Login: React.FunctionComponent<ILoginProps> = () => {
             </div>
           </CardContent>
           <CardFooter>
-            <Button className="w-full">Create account</Button>
+            <Button className="w-full" type='submit'>Login</Button>
           </CardFooter>
           <p className='mt-3 text-sm text-center'>
               Don`t have an account ? <Link to="/signup" className='hover:text-blue-600 text-decoration-line: underline'>Sign up here</Link>
