@@ -4,6 +4,7 @@ import { useUserAuth } from '@/context/UserAuthContext';
 import type { DocumentResponse, Post } from '@/types';
 import { getPostByUserId } from '@/firebaseDb/post.service';
 import { HeartIcon } from 'lucide-react';
+import CircularProgress from '@mui/material/CircularProgress';
 
 
 
@@ -73,7 +74,12 @@ const getAllPost = async (id: string) => {
 
   if (loading) {
     return (
-      <div>...Loading</div>
+      <div className='container mx-auto h-screen'>
+        <div className='flex flex-col justify-center items-center mt-[20vh]'>
+        <CircularProgress className='w-2xs md:w-2xl'/>
+        <div className='text-lg'>Loading</div>
+        </div>
+      </div>
     )
   }
 

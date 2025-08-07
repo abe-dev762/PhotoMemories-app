@@ -3,12 +3,38 @@ import Layout from '@/components/ui/layout'
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
 import Stories from '@/components/stories';
+import type { DocumentResponse } from '@/types';
+import { useUserAuth } from '@/context/UserAuthContext';
+import { getPosts } from '@/firebaseDb/post.service';
+import CircularProgress from '@mui/material/CircularProgress';
+import PostCard from '@/components/postCard';
 
 interface HomeProps {
 
 }
 
 const Home: React.FunctionComponent<HomeProps> = () => {
+  const { user } = useUserAuth();
+  const [data, setData] = React.useState<DocumentResponse[]>([]);
+  const getAllpost = async () => {
+    const res: DocumentResponse[] = (await getPosts()) || [];
+    console.log("all posts are: ", res);
+    setData(res);
+  };
+
+  React.useEffect(() => {
+    if (user != null) {
+      getAllpost();
+    }
+  }, []);
+
+  const renderPost = () => {
+    return data.map((item) => {
+      return <PostCard key={item.id} data={item}/>
+    })
+  };
+
+
   return (
     <Layout>
       <div className='flex flex-col sm:w-2xs md:w-2xl pl-4 ml-2'>
@@ -31,7 +57,15 @@ const Home: React.FunctionComponent<HomeProps> = () => {
         <div className='mb-5'>
           <h2 className='mb-5'>Feed</h2>
           <div className='w-full flex justify-center'>
-            <div className='flex flex-col max-w-sm rounded-sm overflow-hidden'></div>
+            <div className='flex flex-col max-w-sm rounded-sm overflow-hidden'>
+              {data ? renderPost() : 
+              <div className='container mx-auto h-screen'>
+                      <div className='flex flex-col justify-center items-center mt-[20vh]'>
+                      <CircularProgress className='w-2xs md:w-2xl'/>
+                      <div className='text-lg'>Loading</div>
+                      </div>
+                    </div> }
+            </div>
           </div>
         </div>
       </div>

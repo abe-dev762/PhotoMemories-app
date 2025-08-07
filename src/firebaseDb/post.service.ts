@@ -1,6 +1,6 @@
 import { db } from "@/firebaseConfig";
-import type { Post } from "@/types";
-import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, orderBy, query, where } from "firebase/firestore";
+import type { DocumentResponse, Post } from "@/types";
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, orderBy, query, updateDoc, where } from "firebase/firestore";
 import { postConverter } from "./converter";
 
 const COLLECTION_NAME = "post";
@@ -9,9 +9,30 @@ export const createPost = (post: Post) => {
     return addDoc(collection(db, COLLECTION_NAME), post);
 };
 
-export const getPosts = () => {
+export const getPosts = async () => { 
+  try {
     const q = query(collection(db, COLLECTION_NAME), orderBy("date", "desc"));
-    return getDocs(q);
+    const querySnapshot = await getDocs(q);
+    const tempArray: DocumentResponse[] = [];
+
+    if (querySnapshot.size > 0) {
+      querySnapshot.forEach((doc) => {
+        const data = doc.data() as Post;
+        const responseObj: DocumentResponse = {
+          id: doc.id,
+          ...data,
+        };
+        tempArray.push(responseObj);
+      });
+      return tempArray;
+    } else {
+      console.log("Document not found");
+    }
+
+  } catch (error) {
+    console.log(error);
+  }
+    
 };
 
 
@@ -20,7 +41,7 @@ export const getPostByUserId = async (userId: string) => {
   
   const q = query(
     collection(db, "post"),
-    where("userId", "==", userId) // ✅ top-level query
+    where("userId", "==", userId)
   );
 
   const querySnapshot = await getDocs(q);
@@ -36,5 +57,17 @@ export const getPost = (id: string) => {
 
 export const deletePost = (id: string) => {
     return deleteDoc(doc(db, COLLECTION_NAME, id));
+};
+
+export const updateLikesOnPost = (
+  id: string, 
+  userLikes: string[],
+  likes: number
+) => {
+  const docRef = doc(db, COLLECTION_NAME, id);
+  return updateDoc(docRef, {
+    likes: likes,
+    userLikes: userLikes,
+  });
 };
 
