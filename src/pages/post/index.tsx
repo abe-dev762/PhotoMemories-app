@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import FileUploader from '@/components/fileUploader';
 import { useUserAuth } from '@/context/UserAuthContext';
 import type { FileEntry, PhotoMeta, Post } from '@/types';
-import { createPost } from '@/firebaseDb/post.service';
+import { createPost } from '@/firebaseDb/postService';
 import { useNavigate } from 'react-router-dom';
 
 interface CreatePostProps {}

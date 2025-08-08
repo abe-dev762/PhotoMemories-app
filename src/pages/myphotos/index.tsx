@@ -2,7 +2,7 @@ import * as React from 'react';
 import Layout from '@/components/ui/layout';
 import { useUserAuth } from '@/context/UserAuthContext';
 import type { DocumentResponse, Post } from '@/types';
-import { getPostByUserId } from '@/firebaseDb/post.service';
+import { getPostByUserId } from '@/firebaseDb/postService';
 import { HeartIcon } from 'lucide-react';
 import CircularProgress from '@mui/material/CircularProgress';
 

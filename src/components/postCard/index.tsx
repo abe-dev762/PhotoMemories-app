@@ -5,7 +5,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../ui/card
 import image6 from '@/assets/image6.jpg';
 import { HeartIcon, MessageCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { updateLikesOnPost } from '@/firebaseDb/post.service';
+import { updateLikesOnPost } from '@/firebaseDb/postService';
 
 
 interface IPostCard {

@@ -5,7 +5,7 @@ import type { DocumentResponse, Post, ProfileResponse } from '@/types';
 import avatar from "@/assets/default-avatar.png";
 import Button from '@mui/material/Button';
 import { Edit2Icon, HeartIcon } from 'lucide-react';
-import { getPostByUserId } from '@/firebaseDb/post.service';
+import { getPostByUserId } from '@/firebaseDb/postService';
 import CircularProgress from '@mui/material/CircularProgress';
 import { useNavigate } from 'react-router-dom';
 

@@ -5,7 +5,7 @@ import { Search } from 'lucide-react';
 import Stories from '@/components/stories';
 import type { DocumentResponse } from '@/types';
 import { useUserAuth } from '@/context/UserAuthContext';
-import { getPosts } from '@/firebaseDb/post.service';
+import { getPosts } from '@/firebaseDb/postService';
 import CircularProgress from '@mui/material/CircularProgress';
 import PostCard from '@/components/postCard';
 

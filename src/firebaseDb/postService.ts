@@ -1,7 +1,17 @@
 import { db } from "@/firebaseConfig";
 import type { DocumentResponse, Post } from "@/types";
-import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, orderBy, query, updateDoc, where } from "firebase/firestore";
-import { postConverter } from "./converter";
+import { 
+  addDoc, 
+  collection, 
+  deleteDoc, 
+  doc, 
+  getDoc, 
+  getDocs, 
+  orderBy, 
+  query, 
+  updateDoc, 
+  where } from "firebase/firestore";
+
 
 const COLLECTION_NAME = "post";
 
@@ -37,16 +47,12 @@ export const getPosts = async () => {
 
 
 export const getPostByUserId = async (userId: string) => {
-  console.log("Fetching posts for UID:", userId);
-  
-  const q = query(
+    const q = query(
     collection(db, "post"),
     where("userId", "==", userId)
   );
 
   const querySnapshot = await getDocs(q);
-  console.log("Query size:", querySnapshot.size);
-
   return querySnapshot;
 };
 
