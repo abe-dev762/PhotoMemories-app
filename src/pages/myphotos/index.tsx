@@ -19,7 +19,6 @@ const MyPhotos: React.FC<MyPhotoProps> = () => {
   const [data, setData] = React.useState<DocumentResponse[]>([]);
   const [loading, setLoading] = React.useState(true);    
 
-///
 const getAllPost = async (id: string) => {
     try {
       const querySnapshot = await getPostByUserId(id);
@@ -86,7 +85,7 @@ const getAllPost = async (id: string) => {
   return (
     <Layout>
       <div className='flex justify-center'>
-        <div className='border w-[50vw] pl-[4vw]'>
+        <div className='border w-full'>
           <h3 className='bg-slate-800 text-white text-center text-lg p-2'>
             My Photos
           </h3>
