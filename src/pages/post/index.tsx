@@ -97,7 +97,10 @@ const CreatePost: React.FunctionComponent<CreatePostProps> = () => {
                   </Label>
                 </div>
                 <div className='flex flex-col justify-center items-center'>
-                  <FileUploader fileEntry={fileEntry} onChange={setFileEntry} />
+                  <FileUploader 
+                  fileEntry={fileEntry} 
+                  onChange={setFileEntry}
+                  preview={true} />
                   <Button
                     className='mt-8 w-32'
                     type='submit'

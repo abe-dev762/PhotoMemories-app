@@ -11,9 +11,10 @@ import '@uploadcare/react-uploader/core.css'
 interface FileUploaderProps {
   fileEntry: FileEntry;
   onChange: (entry: FileEntry) => void;
+  preview: boolean;
 }
 
-const FileUploader: React.FC<FileUploaderProps> = ({ fileEntry, onChange }) => {
+const FileUploader: React.FC<FileUploaderProps> = ({ fileEntry, onChange, preview }) => {
   const [previews, setPreviews] = useState<string[]>([]);
 
   function isSuccessEntry(file: OutputFileEntry): file is Extract<OutputFileEntry, { status: "success" }> {
@@ -48,15 +49,14 @@ const FileUploader: React.FC<FileUploaderProps> = ({ fileEntry, onChange }) => {
         sourceList="local, camera, facebook, gdrive"
         classNameUploader="uc-dark"
         pubkey="dab42af79c63891d51e5"
-        multiple
+        multiple={preview}
         confirmUpload={false}
         removeCopyright
         onChange={handleFileChange}
       />
 
       
-      {previews.length > 0 && (
-        <div className="flex flex-wrap gap-2 mt-4">
+      {preview ? <div className="flex flex-wrap gap-2 mt-4">
           {previews.map((url, idx) => (
             <img
               key={idx}
@@ -65,8 +65,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({ fileEntry, onChange }) => {
               className="w-30 h-30 object-cover rounded-md border"
             />
           ))}
-        </div>
-      )}
+        </div> : <></>}
     </div>
   );
 };

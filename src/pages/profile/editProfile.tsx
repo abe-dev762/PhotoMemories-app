@@ -8,6 +8,7 @@ import React from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import avatar from '@/assets/default-avatar.png';
 import { Input } from '@/components/ui/input'
+import { createUserProfile, updateUserProfile } from '@/firebaseDb/userService'
 
 
 interface IEditProfileProps {}
@@ -26,9 +27,23 @@ const EditProfile: React.FC<IEditProfileProps> = () => {
     const [data, setData] = React.useState<UserProfile>(initialUserVal); 
     const [fileEntry, setFileEntry] = React.useState<FileEntry>({ files: [] });
 
-    const handleUpdateProfile = () => {
-
+    const handleUpdateProfile = async (e: React.MouseEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      try {
+        if (id) {
+          const response = await updateUserProfile(id, data);
+        } else {
+          const response = await createUserProfile(data);
+        }
+      } catch (error) {
+        console.log(error)
+      }
     };
+    React.useEffect(() => {
+      if(fileEntry.files.length > 0) {
+        setData({ ...data, photoURL: fileEntry.files[0].cdnUrl || ""});
+      }
+    }, [fileEntry]);
 
     return (
     <Layout>
@@ -46,20 +61,28 @@ const EditProfile: React.FC<IEditProfileProps> = () => {
                   </Label>
                   </div>
                   <div className='mb-4'>
+                    {fileEntry.files.length > 0 ? 
+                    <img
+                      className='w-28 h-28 rounded-full border-2 border-zinc-600 object-cover'
+                      alt='avatar'
+                      src={fileEntry.files[0].cdnUrl!}
+                      onError={(e) => {
+                      e.currentTarget.src = avatar
+                    }}/> : 
                     <img
                       className='w-28 h-28 rounded-full border-2 border-zinc-600 object-cover'
                       alt='avatar'
                       src={data.photoURL ? data.photoURL : avatar}
                       onError={(e) => {
                       e.currentTarget.src = avatar
-                    }}/>
+                    }}/> }
                   </div>
                 </div>
                 <div className='flex flex-col justify-center items-center mb-4'>
-                  <FileUploader fileEntry={fileEntry} onChange={setFileEntry} />
+                  <FileUploader fileEntry={fileEntry} onChange={setFileEntry} preview={false}/>
                 </div>
               <div className='flex flex-col'>
-                <Label className='mb-4 pl-2' htmlFor='displayName'>
+                <Label className='mb-4' htmlFor='displayName'>
                   Display Name
                 </Label>
                 <Input 

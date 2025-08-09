@@ -9,8 +9,11 @@ import {
   getDocs, 
   orderBy, 
   query, 
+  QuerySnapshot, 
   updateDoc, 
-  where } from "firebase/firestore";
+  where,
+  CollectionReference
+  } from "firebase/firestore";
 
 
 const COLLECTION_NAME = "post";
@@ -46,14 +49,13 @@ export const getPosts = async () => {
 };
 
 
-export const getPostByUserId = async (userId: string) => {
-    const q = query(
-    collection(db, "post"),
-    where("userId", "==", userId)
-  );
+export const getPostByUserId = async (
+  userId: string
+ ): Promise<QuerySnapshot<DocumentResponse>> => {
+  const postsRef = collection(db, "posts") as CollectionReference<DocumentResponse>;
+  const q = query(postsRef, where("userId", "==", userId));
 
-  const querySnapshot = await getDocs(q);
-  return querySnapshot;
+  return await getDocs(q);
 };
 
 export const getPost = (id: string) => {
